@@ -1,0 +1,2 @@
+inbox.py==0.0.6
+Logbook==1.5.3
