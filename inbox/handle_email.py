@@ -8,8 +8,9 @@ inbox = Inbox()
 
 @inbox.collate
 def handler(to, sender, subject, body):
+    logger.info(body)
     return body
 
 
-print("Listening on port 4467")
+logger.info("Listening on port 4467")
 inbox.serve(address="0.0.0.0", port=4467)
