@@ -1,16 +1,21 @@
-from inbox import Inbox
+from aiosmtpd.controller import Controller
 import logging
 
-logger = logging.Logger(__name__)
+PORT = 4467
 
-inbox = Inbox()
-
-
-@inbox.collate
-def handler(to, sender, subject, body):
-    logger.info(body)
-    return body
+logging.basicConfig(level=logging.DEBUG)
 
 
-logger.info("Listening on port 4467")
-inbox.serve(address="0.0.0.0", port=4467)
+class SMTPHandler:
+    async def handle_DATA(self, server, session, envelope):
+        logging.info(f"from: {envelope.mail_from}")
+        logging.info(f"to: {envelope.rcpt_tos}")
+        logging.info(f"data:\n{envelope.content}")
+        return "250 OK"
+
+
+handler = SMTPHandler()
+
+controller = Controller(handler=handler, port=PORT)
+logging.info(f"Listening on port {PORT}")
+controller.start()
