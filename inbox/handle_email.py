@@ -1,9 +1,12 @@
 from aiosmtpd.controller import Controller
+import asyncio
 import logging
 
 PORT = 4467
 
 logging.basicConfig(level=logging.DEBUG)
+
+loop = asyncio.get_event_loop()
 
 
 class SMTPHandler:
@@ -14,8 +17,20 @@ class SMTPHandler:
         return "250 OK"
 
 
-handler = SMTPHandler()
+if __name__ == '__main__':
 
-controller = Controller(handler=handler, port=PORT)
-logging.info(f"Listening on port {PORT}")
-controller.start()
+    handler = SMTPHandler()
+
+    controller = Controller(handler=handler, port=PORT)
+
+    logging.info(f"Listening on port {PORT}")
+    controller.start()
+
+    try:
+        loop.run_forever()
+    except KeyboardInterrupt:
+        print("Shutting down")
+    finally:
+        controller.stop()
+        loop.stop()
+        loop.close()
