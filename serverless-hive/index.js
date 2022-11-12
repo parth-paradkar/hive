@@ -1,12 +1,15 @@
 'use strict';
-var AWS = require('aws-sdk');
-var s3 = new AWS.S3();
-var bucketName = process.env.S3_BUCKET;
-var simpleParser = require('mailparser').simpleParser;
+const AWS = require('aws-sdk');
+const simpleParser = require('mailparser').simpleParser;
+const s3 = new AWS.S3();
+const dbClient = new AWS.DynamoDB.DocumentClient();
+
+const bucketName = process.env.S3_BUCKET;
+const tableName = process.env.EMAILS_TABLE;
 
 
 module.exports.handler = function (event, context, callback) {
-var s3Object = event.Records[0].s3.object;
+    var s3Object = event.Records[0].s3.object;
 // Retrieve the email from your bucket
     var req = {
         Bucket: bucketName,
@@ -24,12 +27,25 @@ var s3Object = event.Records[0].s3.object;
                     console.log(err, err.stack);
                     callback(err);
                 } else {
-                    console.log("date:", parsed.date);
-                    console.log("subject:", parsed.subject);
-                    console.log("body:", parsed.text);
-                    console.log("from:", parsed.from.text);
-                    console.log("attachments:", parsed.attachments);
-                    callback(null, null);
+                    var params = {
+                        TableName: tableName,
+                        Item: {
+                            userEmail: parsed.from.text,
+                            date: parsed.date,
+                            subject: parsed.subject,
+                            htmlContent: parsed.html,
+                            s3Key: req.Key,
+                        }
+                    }
+                    dbClient.put(params, (err, data) => {
+                        if(err) {
+                            console.log(err);
+                        }
+                        else {
+                            console.log(`Inserted S3 object ${req.Key} to DB`)
+                            console.log(data)
+                        }
+                    });
                 }
             });
         }
