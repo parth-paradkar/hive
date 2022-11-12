@@ -1,0 +1,26 @@
+org: parthparadkar
+app: hive
+service: serverless-hive
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs16.x
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action: s3:*
+          Resource: "*"
+  environment:
+    S3_BUCKET: hive-emails
+
+functions:
+  receiveEmail:
+    handler: index.handler
+    events:
+      - s3:
+          bucket: ${self:provider.environment.S3_BUCKET}
+          event: s3:ObjectCreated:*
+          existing: true
