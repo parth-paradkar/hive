@@ -1,16 +1,36 @@
-from inbox import Inbox
+from aiosmtpd.controller import Controller
+import asyncio
 import logging
 
-logger = logging.Logger(__name__)
+PORT = 4467
 
-inbox = Inbox()
+logging.basicConfig(level=logging.DEBUG)
 
-
-@inbox.collate
-def handler(to, sender, subject, body):
-    logger.info(body)
-    return body
+loop = asyncio.get_event_loop()
 
 
-logger.info("Listening on port 4467")
-inbox.serve(address="0.0.0.0", port=4467)
+class SMTPHandler:
+    async def handle_DATA(self, server, session, envelope):
+        logging.info(f"from: {envelope.mail_from}")
+        logging.info(f"to: {envelope.rcpt_tos}")
+        logging.info(f"data:\n{envelope.content}")
+        return "250 OK"
+
+
+if __name__ == '__main__':
+
+    handler = SMTPHandler()
+
+    controller = Controller(handler=handler, port=PORT)
+
+    logging.info(f"Listening on port {PORT}")
+    controller.start()
+
+    try:
+        loop.run_forever()
+    except KeyboardInterrupt:
+        print("Shutting down")
+    finally:
+        controller.stop()
+        loop.stop()
+        loop.close()

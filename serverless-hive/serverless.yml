@@ -1,0 +1,47 @@
+org: parthparadkar
+app: hive
+service: serverless-hive
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs16.x
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action: s3:*
+          Resource: "*"
+
+        - Effect: Allow
+          Action: dynamodb:*
+          Resource: "*"
+  environment:
+    S3_BUCKET: hive-emails
+    EMAILS_TABLE: hive-emails-table
+
+functions:
+  receiveEmail:
+    handler: index.handler
+    events:
+      - s3:
+          bucket: ${self:provider.environment.S3_BUCKET}
+          event: s3:ObjectCreated:*
+          existing: true
+
+resources:
+  Resources:
+    EmailsTable:
+      Type: 'AWS::DynamoDB::Table'
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: userEmail
+            AttributeType: S
+        KeySchema:
+          - AttributeName: userEmail
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.EMAILS_TABLE}
