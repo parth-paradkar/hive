@@ -20,8 +20,6 @@ module.exports.handler = function (event, context, callback) {
             console.log(err, err.stack);
             callback(err);
         } else {
-            console.log("Raw email:\n" + data.Body);
-// Custom email processing goes here
             simpleParser(data.Body, (err, parsed) => {
                 if (err) {
                     console.log(err, err.stack);
@@ -30,11 +28,11 @@ module.exports.handler = function (event, context, callback) {
                     var params = {
                         TableName: tableName,
                         Item: {
-                            userEmail: parsed.from.text,
-                            date: parsed.date,
+                            s3Key: req.Key,
+                            userEmail: parsed.from.value[0].address,
+                            date: parsed.date.getUTCDate(),
                             subject: parsed.subject,
                             htmlContent: parsed.html,
-                            s3Key: req.Key,
                         }
                     }
                     dbClient.put(params, (err, data) => {

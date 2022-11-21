@@ -19,7 +19,7 @@ provider:
           Resource: "*"
   environment:
     S3_BUCKET: hive-emails
-    EMAILS_TABLE: hive-emails-table
+    EMAILS_TABLE: hive-emails-db
 
 functions:
   receiveEmail:
@@ -29,6 +29,11 @@ functions:
           bucket: ${self:provider.environment.S3_BUCKET}
           event: s3:ObjectCreated:*
           existing: true
+  
+  allBookmarks:
+    handler: api.handler
+    events:
+      - http: 'GET /bookmarks'
 
 resources:
   Resources:
@@ -36,10 +41,10 @@ resources:
       Type: 'AWS::DynamoDB::Table'
       Properties:
         AttributeDefinitions:
-          - AttributeName: userEmail
+          - AttributeName: s3Key
             AttributeType: S
         KeySchema:
-          - AttributeName: userEmail
+          - AttributeName: s3Key
             KeyType: HASH
         ProvisionedThroughput:
           ReadCapacityUnits: 1
