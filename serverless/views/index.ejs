@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Emails</title>
+  </head>
+  <body>
+    <ul>
+      <% emails.forEach((email) => { %>
+        <li>
+          <a href="<%= email.url %>"><%= email.subject %></a>
+        </li>
+      <% }); %>
+    </ul>
+  </body>
+</html>
