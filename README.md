@@ -8,10 +8,12 @@ Hive makes use of AWS's Simple Email Service , which creates objects in an S3 bu
 
 Note: Setup requires having a domain name and an AWS account
 
-1. Setup AWS SES for receiving emails
+1. Setup AWS SES for receiving emails 
+
    Follow the steps given [here](https://docs.aws.amazon.com/ses/latest/dg/receiving-email-setting-up.html). Create a rule set that pushes incoming emails to S3.
 
-2. Setup serverless locally
+2. Setup serverless locally 
+
    Follow the steps given [here](https://www.serverless.com/framework/docs/getting-started/).
 
 3. Clone the repository locally
