@@ -35,6 +35,11 @@ functions:
     events:
       - http: 'GET /bookmarks'
 
+  getBookmarkbyId:
+    handler: api.handler
+    events:
+      - http: 'GET /bookmark/{proxy+}'
+
 resources:
   Resources:
     EmailsTable:
