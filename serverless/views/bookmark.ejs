@@ -9,5 +9,49 @@
     <div id="html-container">
       <%- htmlContent %>
     </div>
+    <div id="notes">
+      <ul>
+        <% notes.forEach((note) => { %>
+          <li>
+            <div class="noteCard" id="<%= note.id %>">
+              <p><%= note.date %></p>
+              <p><%= note.content %></p>
+            </div>
+          </li>
+        <% }); %>
+      </ul>
+    </div>
+    <div id="note-form">
+      <form id="new-note">
+        <input type="text" name="noteContent" id="new-note-content">
+        <input type="submit" name="submit" id="note-button">
+      </form>
+    </div>
   </body>
 </html>
+
+<script>
+  var noteButton = document.getElementById("note-button");
+  noteButton.addEventListener("click", (event) => {
+    event.preventDefault();
+    body: document.getElementById("note-button").value
+    fetch("/dev/notes/add?key=<%= s3Key %>", 
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'text/plain;charset=UTF-8'
+        },
+        body: document.getElementById("new-note-content").value
+      },
+    ).then(
+      (response) => {
+        if(response.status == 200) {
+          console.log(response)
+        } else {
+          window.alert("Failed to create note!");
+          console.log(response);
+        }
+      }
+    )
+  })
+</script>

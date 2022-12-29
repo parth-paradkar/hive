@@ -35,10 +35,20 @@ functions:
     events:
       - http: 'GET /bookmarks'
 
+  deleteBookmark:
+    handler: api.handler
+    events:
+      - http: 'DELETE /bookmarks/delete/{proxy+}'
+
   getBookmarkbyId:
     handler: api.handler
     events:
       - http: 'GET /bookmark/{proxy+}'
+
+  addBookmarkNote:
+    handler: api.handler
+    events:
+      - http: 'POST /notes/add'
 
 resources:
   Resources:

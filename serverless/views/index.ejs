@@ -7,9 +7,36 @@
     <ul>
       <% emails.forEach((email) => { %>
         <li>
-          <a href="<%= email.url %>"><%= email.subject %></a>
+          <div class="emailCard" id="<%= email.s3Key %>">
+            <a href="<%= email.url %>"><%= email.subject %></a>
+            <button class="deleteButton"  id="<%= email.s3Key %>">Delete</button>
+          </div>
         </li>
       <% }); %>
     </ul>
   </body>
 </html>
+
+<script>
+  function addDelete(){
+    var deleteElements = document.getElementsByClassName("deleteButton");
+    var deleteElementsArray = [...deleteElements];
+    deleteElementsArray.map((element) => {
+      element.addEventListener('click', function(event) {
+        fetch(`/dev/bookmarks/delete/${event.target.id}`, {
+          method: 'DELETE',
+        }).then(response => {
+          if(response.status == 200) {
+            console.log(document.getElementById(event.target.id))
+            let deleteDiv = document.getElementById(event.target.id);
+            deleteDiv.innerHTML = "Bookmark deleted"
+          } else {
+            console.log("Delete operation failed!");
+            console.log(response.json());
+          }
+        })
+      })
+    })
+  }
+  addDelete();
+</script>

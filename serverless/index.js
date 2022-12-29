@@ -33,6 +33,7 @@ module.exports.handler = function (event, context, callback) {
                             date: parsed.date.getUTCDate(),
                             subject: parsed.subject,
                             htmlContent: parsed.html,
+                            notes: []
                         }
                     }
                     dbClient.put(params, (err, data) => {
